@@ -51,6 +51,8 @@ public class BookDisplay {
             System.out.println("9. Rechercher par catégorie");
             System.out.println("10. Emprunter un livre");
             System.out.println("11. Rendre un livre");
+            System.out.println("12. Exporter des livres");
+            System.out.println("13. Importer des livres");
             System.out.println("0. Quitter");
             System.out.print("\nVotre choix : ");
 
