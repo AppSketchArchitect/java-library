@@ -109,6 +109,8 @@ public class BookManager {
             transaction.begin();
             bookRepository.deleteById(id);
             transaction.commit();
+            em.flush(); // Force la synchronisation avec la base
+            em.clear(); // Vide le cache de premier niveau
         } catch (Exception e) {
             if (transaction.isActive()) {
                 transaction.rollback();
