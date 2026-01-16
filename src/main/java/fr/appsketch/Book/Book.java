@@ -1,6 +1,7 @@
 package fr.appsketch.Book;
 
 import fr.appsketch.Emprunt.Emprunt;
+import fr.appsketch.Emprunt.EtatEmprunt;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -108,7 +109,7 @@ public class Book {
         }
         return emprunts.stream()
                 .anyMatch(emprunt -> emprunt.getEtat() != null &&
-                        emprunt.getEtat().toString().equals("EN_COURS"));
+                        emprunt.getEtat().equals(EtatEmprunt.EN_COURS));
     }
 
     // Méthode utilitaire pour ajouter un emprunt
