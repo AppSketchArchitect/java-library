@@ -44,7 +44,9 @@ public class BookManager {
         try {
             transaction.begin();
             Book savedBook = bookRepository.save(book);
+            em.flush(); // Force la synchronisation avec la base
             transaction.commit();
+            em.clear(); // Vide le cache de premier niveau
             return savedBook;
         } catch (Exception e) {
             if (transaction.isActive()) {
@@ -85,7 +87,9 @@ public class BookManager {
         try {
             transaction.begin();
             Book updatedBook = bookRepository.save(book);
+            em.flush(); // Force la synchronisation avec la base
             transaction.commit();
+            em.clear(); // Vide le cache de premier niveau
             return updatedBook;
         } catch (Exception e) {
             if (transaction.isActive()) {
@@ -108,9 +112,9 @@ public class BookManager {
         try {
             transaction.begin();
             bookRepository.deleteById(id);
+            em.flush(); // Force la synchronisation avec la base AVANT le commit
             transaction.commit();
-            em.flush(); // Force la synchronisation avec la base
-            em.clear(); // Vide le cache de premier niveau
+            em.clear(); // Vide le cache de premier niveau APRÈS le commit
         } catch (Exception e) {
             if (transaction.isActive()) {
                 transaction.rollback();

@@ -49,7 +49,9 @@ public class UserManager {
         try {
             transaction.begin();
             User savedUser = userRepository.save(user);
+            em.flush(); // Force la synchronisation avec la base
             transaction.commit();
+            em.clear(); // Vide le cache de premier niveau
             return savedUser;
         } catch (Exception e) {
             if (transaction.isActive()) {
@@ -91,7 +93,9 @@ public class UserManager {
         try {
             transaction.begin();
             User updatedUser = userRepository.save(user);
+            em.flush(); // Force la synchronisation avec la base
             transaction.commit();
+            em.clear(); // Vide le cache de premier niveau
             return updatedUser;
         } catch (Exception e) {
             if (transaction.isActive()) {
@@ -114,8 +118,8 @@ public class UserManager {
         try {
             transaction.begin();
             userRepository.deleteById(id);
-            transaction.commit();
             em.flush(); // Force la synchronisation avec la base
+            transaction.commit();
             em.clear(); // Vide le cache de premier niveau
         } catch (Exception e) {
             if (transaction.isActive()) {

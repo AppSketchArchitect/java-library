@@ -48,6 +48,8 @@ public class EmpruntManager {
             transaction.begin();
             Emprunt savedEmprunt = empruntRepository.save(emprunt);
             transaction.commit();
+            em.flush(); // Force la synchronisation avec la base
+            em.clear(); // Vide le cache de premier niveau
             return savedEmprunt;
         } catch (Exception e) {
             if (transaction.isActive()) {
@@ -80,9 +82,9 @@ public class EmpruntManager {
         try {
             transaction.begin();
             empruntRepository.save(emprunt);
+            em.flush(); // Force la synchronisation avec la base AVANT le commit
             transaction.commit();
-            em.flush(); // Force la synchronisation avec la base
-            em.clear(); // Vide le cache de premier niveau
+            em.clear(); // Vide le cache de premier niveau APRÈS le commit
         } catch (Exception e) {
             if (transaction.isActive()) {
                 transaction.rollback();
