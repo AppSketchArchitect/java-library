@@ -35,22 +35,28 @@ public class EmpruntManager {
             throw new IllegalArgumentException("Le livre est obligatoire");
         }
 
-        // Vérifier si le livre est déjà emprunté via le repository
-        List<Emprunt> empruntsEnCours = empruntRepository.findEmpruntsEnCoursByBook(book);
-        if (!empruntsEnCours.isEmpty()) {
-            throw new IllegalArgumentException("Ce livre est déjà emprunté");
-        }
-
-        Emprunt emprunt = new Emprunt(user, book, LocalDate.now());
-
         EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
+
+            // Vérifier si le livre est déjà emprunté DANS la transaction
+            List<Emprunt> empruntsEnCours = empruntRepository.findEmpruntsEnCoursByBook(book);
+            if (!empruntsEnCours.isEmpty()) {
+                transaction.rollback();
+                throw new IllegalArgumentException("Ce livre est déjà emprunté");
+            }
+
+            Emprunt emprunt = new Emprunt(user, book, LocalDate.now());
             Emprunt savedEmprunt = empruntRepository.save(emprunt);
+
+            em.flush(); // Force la synchronisation avec la base AVANT le commit
             transaction.commit();
-            em.flush(); // Force la synchronisation avec la base
-            em.clear(); // Vide le cache de premier niveau
+            em.clear(); // Vide le cache de premier niveau APRÈS le commit
+
             return savedEmprunt;
+        } catch (IllegalArgumentException e) {
+            // Relancer l'exception métier telle quelle
+            throw e;
         } catch (Exception e) {
             if (transaction.isActive()) {
                 transaction.rollback();
