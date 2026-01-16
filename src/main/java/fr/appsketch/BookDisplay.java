@@ -23,7 +23,7 @@ public class BookDisplay {
     private final BookManager bookManager;
     private final EmpruntManager empruntManager;
     private final UserManager userManager;
-    private final Scanner scanner;
+    private Scanner scanner;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public BookDisplay(BookManager bookManager, EmpruntManager empruntManager, UserManager userManager) {
@@ -31,6 +31,11 @@ public class BookDisplay {
         this.empruntManager = empruntManager;
         this.userManager = userManager;
         this.scanner = new Scanner(System.in);
+    }
+
+    // Pour les tests - permet de définir le scanner
+    void setScanner(Scanner scanner) {
+        this.scanner = scanner;
     }
 
     public void afficherMenu() {

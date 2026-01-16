@@ -110,6 +110,9 @@ public class EmpruntManager {
      * Récupère les emprunts d'un utilisateur
      */
     public List<Emprunt> listerEmpruntsParUtilisateur(Long userId) {
+        if (userId == null) {
+            return List.of();
+        }
         return empruntRepository.findByUserId(userId);
     }
 
@@ -117,6 +120,9 @@ public class EmpruntManager {
      * Récupère les emprunts d'un livre
      */
     public List<Emprunt> listerEmpruntsParLivre(Long bookId) {
+        if (bookId == null) {
+            return List.of();
+        }
         return empruntRepository.findByBookId(bookId);
     }
 
@@ -124,6 +130,9 @@ public class EmpruntManager {
      * Récupère l'emprunt en cours d'un livre
      */
     public Optional<Emprunt> getEmpruntEnCours(Book book) {
+        if (book == null) {
+            return Optional.empty();
+        }
         List<Emprunt> empruntsEnCours = empruntRepository.findEmpruntsEnCoursByBook(book);
         return empruntsEnCours.isEmpty() ? Optional.empty() : Optional.of(empruntsEnCours.get(0));
     }

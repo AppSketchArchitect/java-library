@@ -242,6 +242,10 @@ public class BookManager {
 
         try (FileReader reader = new FileReader(cheminFichier)) {
             livresDTO = gson.fromJson(reader, listType);
+        } catch (IOException e) {
+            // Si le fichier n'existe pas ou n'est pas accessible, retourner 0
+            System.out.println("⚠ Impossible de lire le fichier: " + e.getMessage());
+            return 0;
         }
 
         if (livresDTO == null || livresDTO.isEmpty()) {
