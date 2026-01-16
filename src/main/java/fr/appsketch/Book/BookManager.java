@@ -4,10 +4,13 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Optional;
 
+/**
+ * Manager pour gérer la logique métier des livres
+ * Responsabilités: logique métier, validation, gestion des transactions
+ */
 public class BookManager {
 
     private final BookRepository bookRepository;
@@ -18,81 +21,157 @@ public class BookManager {
         this.em = em;
     }
 
-    public Book creerLivre() {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Création d'un nouveau livre");
-
-        System.out.print("Titre : ");
-        String titre = scanner.nextLine().trim();
-
-        System.out.print("Auteur : ");
-        String auteur = scanner.nextLine().trim();
-
-        LocalDate datePublication = null;
-        while (datePublication == null) {
-            try {
-                System.out.print("Date de publication (YYYY-MM-DD) : ");
-                String dateStr = scanner.nextLine().trim();
-                datePublication = LocalDate.parse(dateStr);
-            } catch (DateTimeParseException e) {
-                System.out.println("Format de date invalide. Réessayez.");
-            }
+    /**
+     * Ajoute un nouveau livre en base de données
+     */
+    public Book ajouterLivre(String titre, String auteur, LocalDate datePublication, String isbn, String categorie) {
+        // Validation
+        if (titre == null || titre.trim().isEmpty()) {
+            throw new IllegalArgumentException("Le titre est obligatoire");
+        }
+        if (auteur == null || auteur.trim().isEmpty()) {
+            throw new IllegalArgumentException("L'auteur est obligatoire");
         }
 
-        System.out.print("ISBN : ");
-        String isbn = scanner.nextLine().trim();
-
-        if (bookRepository.existsByIsbn(isbn)) {
-            System.out.println("Erreur : ce livre existe déjà (ISBN unique) !");
-            return null;
+        // Vérifier si l'ISBN existe déjà
+        if (isbn != null && !isbn.isEmpty() && bookRepository.existsByIsbn(isbn)) {
+            throw new IllegalArgumentException("Un livre avec cet ISBN existe déjà");
         }
-
-        System.out.print("Catégorie : ");
-        String categorie = scanner.nextLine().trim();
 
         Book book = new Book(titre, auteur, datePublication, isbn, categorie);
 
-        // Transaction pour enregistrer le livre
         EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
-            bookRepository.save(book);
+            Book savedBook = bookRepository.save(book);
             transaction.commit();
-            System.out.println("Livre créé et enregistré : " + book);
+            return savedBook;
         } catch (Exception e) {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
-            System.err.println("Erreur lors de la création du livre : " + e.getMessage());
-            return null;
+            throw new RuntimeException("Erreur lors de l'ajout du livre", e);
         }
-
-        return book;
     }
 
-    public void afficherLivres() {
-        List<Book> livres = bookRepository.findAll();
-
-        System.out.println("\n--- Livres en base ---");
-        for (Book b : livres) {
-            System.out.println(b);
+    /**
+     * Modifie un livre existant
+     */
+    public Book modifierLivre(Long id, String titre, String auteur, LocalDate datePublication, String isbn, String categorie) {
+        Optional<Book> optionalBook = bookRepository.findById(id);
+        if (optionalBook.isEmpty()) {
+            throw new IllegalArgumentException("Livre non trouvé avec l'ID: " + id);
         }
-        System.out.println("----------------------\n");
-    }
 
-    public static void main(String[] args) {
-        BookRepository repo = new BookRepository();
-        EntityManager em = repo.getEm();
+        Book book = optionalBook.get();
 
-        BookManager manager = new BookManager(repo, em);
+        if (titre != null && !titre.isEmpty()) {
+            book.setTitre(titre);
+        }
+        if (auteur != null && !auteur.isEmpty()) {
+            book.setAuteur(auteur);
+        }
+        if (datePublication != null) {
+            book.setDatePublication(datePublication);
+        }
+        if (isbn != null && !isbn.isEmpty()) {
+            book.setIsbn(isbn);
+        }
+        if (categorie != null && !categorie.isEmpty()) {
+            book.setCategorie(categorie);
+        }
 
+        EntityTransaction transaction = em.getTransaction();
         try {
-            manager.creerLivre();
-            manager.afficherLivres();
-        } finally {
-            em.close();
+            transaction.begin();
+            Book updatedBook = bookRepository.save(book);
+            transaction.commit();
+            return updatedBook;
+        } catch (Exception e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw new RuntimeException("Erreur lors de la modification du livre", e);
         }
+    }
+
+    /**
+     * Supprime un livre par son ID
+     */
+    public void supprimerLivre(Long id) {
+        Optional<Book> optionalBook = bookRepository.findById(id);
+        if (optionalBook.isEmpty()) {
+            throw new IllegalArgumentException("Livre non trouvé avec l'ID: " + id);
+        }
+
+        EntityTransaction transaction = em.getTransaction();
+        try {
+            transaction.begin();
+            bookRepository.deleteById(id);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw new RuntimeException("Erreur lors de la suppression du livre", e);
+        }
+    }
+
+    /**
+     * Récupère un livre par son ID
+     */
+    public Optional<Book> trouverParId(Long id) {
+        return bookRepository.findById(id);
+    }
+
+    /**
+     * Récupère tous les livres
+     */
+    public List<Book> listerTousLesLivres() {
+        return bookRepository.findAll();
+    }
+
+    /**
+     * Recherche des livres par titre (contient)
+     */
+    public List<Book> rechercherParTitre(String titre) {
+        if (titre == null || titre.trim().isEmpty()) {
+            return List.of();
+        }
+        return bookRepository.findAll().stream()
+                .filter(book -> book.getTitre().toLowerCase().contains(titre.toLowerCase()))
+                .toList();
+    }
+
+    /**
+     * Recherche des livres par auteur (contient)
+     */
+    public List<Book> rechercherParAuteur(String auteur) {
+        if (auteur == null || auteur.trim().isEmpty()) {
+            return List.of();
+        }
+        return bookRepository.findAll().stream()
+                .filter(book -> book.getAuteur().toLowerCase().contains(auteur.toLowerCase()))
+                .toList();
+    }
+
+    /**
+     * Recherche des livres par catégorie (contient)
+     */
+    public List<Book> rechercherParCategorie(String categorie) {
+        if (categorie == null || categorie.trim().isEmpty()) {
+            return List.of();
+        }
+        return bookRepository.findAll().stream()
+                .filter(book -> book.getCategorie() != null &&
+                        book.getCategorie().toLowerCase().contains(categorie.toLowerCase()))
+                .toList();
+    }
+
+    /**
+     * Vérifie si un ISBN existe déjà
+     */
+    public boolean isbnExiste(String isbn) {
+        return isbn != null && !isbn.isEmpty() && bookRepository.existsByIsbn(isbn);
     }
 }
-

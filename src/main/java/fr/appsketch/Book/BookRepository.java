@@ -1,23 +1,22 @@
 package fr.appsketch.Book;
 
-import fr.appsketch.Core.HibernateManager;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository pour gérer la persistance des livres
+ * Responsabilités: accès aux données, requêtes SQL/JPQL
+ */
 public class BookRepository {
 
-    @PersistenceContext
-    private EntityManager em;
+    private final EntityManager em;
 
-    public BookRepository() {
-        em = HibernateManager.getSessionFactory().createEntityManager();
+    public BookRepository(EntityManager em) {
+        this.em = em;
     }
 
-    @Transactional
     public Book save(Book book) {
         if (book.getId() == null) {
             em.persist(book);
@@ -53,9 +52,5 @@ public class BookRepository {
 
     public void deleteById(Long id) {
         findById(id).ifPresent(em::remove);
-    }
-
-    public EntityManager getEm() {
-        return em;
     }
 }
