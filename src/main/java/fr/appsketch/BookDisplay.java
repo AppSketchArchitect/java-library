@@ -2,15 +2,10 @@ package fr.appsketch;
 
 import fr.appsketch.Book.Book;
 import fr.appsketch.Book.BookManager;
-import fr.appsketch.Book.BookRepository;
-import fr.appsketch.Core.HibernateManager;
 import fr.appsketch.Emprunt.Emprunt;
 import fr.appsketch.Emprunt.EmpruntManager;
-import fr.appsketch.Emprunt.EmpruntRepository;
 import fr.appsketch.User.User;
 import fr.appsketch.User.UserManager;
-import fr.appsketch.User.UserRepository;
-import jakarta.persistence.EntityManager;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -96,7 +91,7 @@ public class BookDisplay {
                     rendreLivre();
                     break;
                 case "0":
-                    System.out.println("\n✓ Au revoir !");
+                    System.out.println("\n✓ Retour au menu principal...");
                     continuer = false;
                     break;
                 default:
@@ -500,29 +495,5 @@ public class BookDisplay {
     private String truncate(String str, int maxLength) {
         if (str == null) return "N/A";
         return str.length() > maxLength ? str.substring(0, maxLength - 3) + "..." : str;
-    }
-
-    public static void main(String[] args) {
-        EntityManager em = HibernateManager.getSessionFactory().createEntityManager();
-
-        // Initialisation des repositories
-        BookRepository bookRepository = new BookRepository(em);
-        UserRepository userRepository = new UserRepository(em);
-        EmpruntRepository empruntRepository = new EmpruntRepository(em);
-
-        // Initialisation des managers
-        BookManager bookManager = new BookManager(bookRepository, em);
-        UserManager userManager = new UserManager(userRepository, em);
-        EmpruntManager empruntManager = new EmpruntManager(empruntRepository, em);
-
-        // Création du display
-        BookDisplay bookDisplay = new BookDisplay(bookManager, empruntManager, userManager);
-
-        try {
-            bookDisplay.afficherMenu();
-        } finally {
-            em.close();
-            HibernateManager.shutdown();
-        }
     }
 }

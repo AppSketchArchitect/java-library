@@ -1,10 +1,7 @@
 package fr.appsketch;
 
-import fr.appsketch.Core.HibernateManager;
 import fr.appsketch.User.User;
 import fr.appsketch.User.UserManager;
-import fr.appsketch.User.UserRepository;
-import jakarta.persistence.EntityManager;
 
 import java.util.List;
 import java.util.Optional;
@@ -66,7 +63,7 @@ public class UserDisplay {
                     rechercherParPrenom();
                     break;
                 case "0":
-                    System.out.println("\n✓ Au revoir !");
+                    System.out.println("\n✓ Retour au menu principal...");
                     continuer = false;
                     break;
                 default:
@@ -274,19 +271,5 @@ public class UserDisplay {
     private String truncate(String str, int maxLength) {
         if (str == null) return "N/A";
         return str.length() > maxLength ? str.substring(0, maxLength - 3) + "..." : str;
-    }
-
-    public static void main(String[] args) {
-        EntityManager em = HibernateManager.getSessionFactory().createEntityManager();
-        UserRepository userRepository = new UserRepository(em);
-        UserManager userManager = new UserManager(userRepository, em);
-        UserDisplay userDisplay = new UserDisplay(userManager);
-
-        try {
-            userDisplay.afficherMenu();
-        } finally {
-            em.close();
-            HibernateManager.shutdown();
-        }
     }
 }
