@@ -1,6 +1,7 @@
 package fr.appsketch.Emprunt;
 
 import fr.appsketch.Book.Book;
+import fr.appsketch.Core.HibernateManager;
 import fr.appsketch.User.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -12,7 +13,11 @@ import java.util.Optional;
 public class EmpruntRepository {
 
     @PersistenceContext
-    private EntityManager em;
+    private EntityManager em ;
+
+    public EmpruntRepository() {
+        em = HibernateManager.getSessionFactory().createEntityManager();
+    }
 
     @Transactional
     public Emprunt save(Emprunt emprunt) {
@@ -62,7 +67,6 @@ public class EmpruntRepository {
         return query.getResultList();
     }
 
-    @Transactional
     public void deleteById(Long id) {
         findById(id).ifPresent(em::remove);
     }

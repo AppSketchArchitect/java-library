@@ -1,5 +1,6 @@
 package fr.appsketch.Book;
 
+import fr.appsketch.Core.HibernateManager;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -11,6 +12,10 @@ public class BookRepository {
 
     @PersistenceContext
     private EntityManager em;
+
+    public BookRepository() {
+        em = HibernateManager.getSessionFactory().createEntityManager();
+    }
 
     @Transactional
     public Book save(Book book) {
@@ -46,7 +51,6 @@ public class BookRepository {
         return query.getSingleResult() > 0;
     }
 
-    @Transactional
     public void deleteById(Long id) {
         findById(id).ifPresent(em::remove);
     }

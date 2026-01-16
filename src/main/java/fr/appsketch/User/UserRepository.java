@@ -1,5 +1,6 @@
 package fr.appsketch.User;
 
+import fr.appsketch.Core.HibernateManager;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -11,6 +12,10 @@ public class UserRepository {
 
     @PersistenceContext
     private EntityManager em;
+
+    public UserRepository() {
+        em = HibernateManager.getSessionFactory().createEntityManager();
+    }
 
     @Transactional
     public User save(User user) {
@@ -46,7 +51,6 @@ public class UserRepository {
         return query.getSingleResult() > 0;
     }
 
-    @Transactional
     public void deleteById(Long id) {
         findById(id).ifPresent(em::remove);
     }

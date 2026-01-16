@@ -1,7 +1,10 @@
 package fr.appsketch.Book;
 
+import fr.appsketch.Emprunt.Emprunt;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "Books")
@@ -25,6 +28,9 @@ public class Book {
 
     @Column
     private String categorie;
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Emprunt> emprunts = new ArrayList<>();
 
     // Constructeurs
     public Book() {
@@ -87,6 +93,26 @@ public class Book {
         this.categorie = categorie;
     }
 
+    public List<Emprunt> getEmprunts() {
+        return emprunts;
+    }
+
+    public void setEmprunts(List<Emprunt> emprunts) {
+        this.emprunts = emprunts;
+    }
+
+    // Méthode utilitaire pour ajouter un emprunt
+    public void addEmprunt(Emprunt emprunt) {
+        emprunts.add(emprunt);
+        emprunt.setBook(this);
+    }
+
+    // Méthode utilitaire pour retirer un emprunt
+    public void removeEmprunt(Emprunt emprunt) {
+        emprunts.remove(emprunt);
+        emprunt.setBook(null);
+    }
+
     @Override
     public String toString() {
         return "Livre{" +
@@ -96,6 +122,7 @@ public class Book {
                 ", datePublication=" + datePublication +
                 ", isbn='" + isbn + '\'' +
                 ", categorie='" + categorie + '\'' +
+                ", emprunts=" + emprunts.size() +
                 '}';
     }
 }
