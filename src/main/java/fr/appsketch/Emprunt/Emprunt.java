@@ -24,6 +24,10 @@ public class Emprunt {
     @Column(name = "date_emprunt", nullable = false)
     private LocalDate dateEmprunt;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "etat", nullable = false)
+    private EtatEmprunt etat;
+
     public Emprunt() {
     }
 
@@ -31,6 +35,7 @@ public class Emprunt {
         this.user = user;
         this.book = book;
         this.dateEmprunt = dateEmprunt;
+        this.etat = EtatEmprunt.EN_COURS;
     }
 
     public Long getId() {
@@ -63,5 +68,13 @@ public class Emprunt {
 
     public void setDateEmprunt(LocalDate dateEmprunt) {
         this.dateEmprunt = dateEmprunt;
+    }
+
+    public EtatEmprunt getEtat() {
+        return etat;
+    }
+
+    public void setEtat(EtatEmprunt etat) {
+        this.etat = etat;
     }
 }

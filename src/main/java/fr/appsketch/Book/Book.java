@@ -26,9 +26,6 @@ public class Book {
     @Column
     private String categorie;
 
-    @Column(name = "disponible")
-    private boolean disponible = true;
-
     // Constructeurs
     public Book() {
     }
@@ -39,7 +36,6 @@ public class Book {
         this.datePublication = datePublication;
         this.isbn = isbn;
         this.categorie = categorie;
-        this.disponible = true;
     }
 
     // Getters et Setters
@@ -91,14 +87,6 @@ public class Book {
         this.categorie = categorie;
     }
 
-    public boolean isDisponible() {
-        return disponible;
-    }
-
-    public void setDisponible(boolean disponible) {
-        this.disponible = disponible;
-    }
-
     @Override
     public String toString() {
         return "Livre{" +
@@ -108,7 +96,6 @@ public class Book {
                 ", datePublication=" + datePublication +
                 ", isbn='" + isbn + '\'' +
                 ", categorie='" + categorie + '\'' +
-                ", disponible=" + disponible +
                 '}';
     }
 }
