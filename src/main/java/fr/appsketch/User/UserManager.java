@@ -9,8 +9,8 @@ import java.util.List;
 
 public class UserManager {
 
-    private UserRepository userRepository;
-    private EntityManager em;
+    private final UserRepository userRepository;
+    private final EntityManager em;
 
     public UserManager(UserRepository userRepository, EntityManager em) {
         this.userRepository = userRepository;
