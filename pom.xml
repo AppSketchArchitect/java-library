@@ -14,6 +14,10 @@
     </properties>
 
     <dependencies>
-        <!-- Dépendances à ajouter ici -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.41.2.2</version>
+        </dependency>
     </dependencies>
 </project>
