@@ -29,7 +29,7 @@ public class Book {
     @Column
     private String categorie;
 
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Emprunt> emprunts = new ArrayList<>();
 
     // Constructeurs

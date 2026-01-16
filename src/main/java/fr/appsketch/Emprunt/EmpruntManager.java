@@ -35,8 +35,9 @@ public class EmpruntManager {
             throw new IllegalArgumentException("Le livre est obligatoire");
         }
 
-        // Vérifier si le livre est déjà emprunté
-        if (book.isEmprunte()) {
+        // Vérifier si le livre est déjà emprunté via le repository
+        List<Emprunt> empruntsEnCours = empruntRepository.findEmpruntsEnCoursByBook(book);
+        if (!empruntsEnCours.isEmpty()) {
             throw new IllegalArgumentException("Ce livre est déjà emprunté");
         }
 
