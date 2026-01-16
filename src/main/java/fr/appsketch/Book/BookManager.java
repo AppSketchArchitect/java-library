@@ -1,9 +1,17 @@
 package fr.appsketch.Book;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -197,5 +205,86 @@ public class BookManager {
      */
     public boolean isbnExiste(String isbn) {
         return isbn != null && !isbn.isEmpty() && bookRepository.existsByIsbn(isbn);
+    }
+
+    /**
+     * Exporte la liste des livres vers un fichier JSON
+     */
+    public void exporterVersJson(String cheminFichier) throws IOException {
+        List<Book> livres = bookRepository.findAll();
+        List<BookDTO> livresDTO = new ArrayList<>();
+
+        for (Book book : livres) {
+            livresDTO.add(BookDTO.fromBook(book));
+        }
+
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                .create();
+
+        try (FileWriter writer = new FileWriter(cheminFichier)) {
+            gson.toJson(livresDTO, writer);
+        }
+    }
+
+    /**
+     * Importe des livres depuis un fichier JSON
+     * @return Le nombre de livres importés avec succès
+     */
+    public int importerDepuisJson(String cheminFichier) throws IOException {
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                .create();
+
+        Type listType = new TypeToken<List<BookDTO>>(){}.getType();
+        List<BookDTO> livresDTO;
+
+        try (FileReader reader = new FileReader(cheminFichier)) {
+            livresDTO = gson.fromJson(reader, listType);
+        }
+
+        if (livresDTO == null || livresDTO.isEmpty()) {
+            return 0;
+        }
+
+        int compteur = 0;
+        EntityTransaction transaction = em.getTransaction();
+
+        try {
+            transaction.begin();
+
+            for (BookDTO dto : livresDTO) {
+                // Vérifier si un livre avec le même ISBN existe déjà
+                if (dto.getIsbn() != null && !dto.getIsbn().isEmpty()
+                    && bookRepository.existsByIsbn(dto.getIsbn())) {
+                    System.out.println("⚠ Livre ignoré (ISBN existe déjà): " + dto.getTitre());
+                    continue;
+                }
+
+                Book book = new Book(
+                    dto.getTitre(),
+                    dto.getAuteur(),
+                    dto.getDatePublication(),
+                    dto.getIsbn(),
+                    dto.getCategorie()
+                );
+
+                bookRepository.save(book);
+                compteur++;
+            }
+
+            em.flush();
+            transaction.commit();
+            em.clear();
+
+        } catch (Exception e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw new RuntimeException("Erreur lors de l'import des livres", e);
+        }
+
+        return compteur;
     }
 }

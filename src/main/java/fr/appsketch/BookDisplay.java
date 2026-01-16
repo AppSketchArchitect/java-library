@@ -90,6 +90,12 @@ public class BookDisplay {
                 case "11":
                     rendreLivre();
                     break;
+                case "12":
+                    exporterLivresJson();
+                    break;
+                case "13":
+                    importerLivresJson();
+                    break;
                 case "0":
                     System.out.println("\n✓ Retour au menu principal...");
                     continuer = false;
@@ -444,6 +450,63 @@ public class BookDisplay {
 
         } catch (NumberFormatException e) {
             System.out.println("\n✗ ID invalide !");
+        }
+    }
+
+    private void exporterLivresJson() {
+        System.out.println("\n--- EXPORTER LES LIVRES (JSON) ---");
+
+        System.out.print("Nom du fichier (ex: livres.json) : ");
+        String nomFichier = scanner.nextLine().trim();
+
+        if (nomFichier.isEmpty()) {
+            System.out.println("\n✗ Nom de fichier invalide !");
+            return;
+        }
+
+        // Ajouter l'extension .json si elle n'est pas présente
+        if (!nomFichier.toLowerCase().endsWith(".json")) {
+            nomFichier += ".json";
+        }
+
+        try {
+            bookManager.exporterVersJson(nomFichier);
+            System.out.println("\n✓ Export réussi !");
+            System.out.println("📁 Fichier créé : " + nomFichier);
+            System.out.println("📊 Tous les livres ont été exportés.");
+        } catch (Exception e) {
+            System.err.println("\n✗ Erreur lors de l'export : " + e.getMessage());
+        }
+    }
+
+    private void importerLivresJson() {
+        System.out.println("\n--- IMPORTER DES LIVRES (JSON) ---");
+
+        System.out.print("Nom du fichier à importer (ex: livres.json) : ");
+        String nomFichier = scanner.nextLine().trim();
+
+        if (nomFichier.isEmpty()) {
+            System.out.println("\n✗ Nom de fichier invalide !");
+            return;
+        }
+
+        System.out.println("\n⚠ Les livres avec un ISBN existant seront ignorés.");
+        System.out.print("Confirmer l'import (oui/non) : ");
+        String confirmation = scanner.nextLine().trim().toLowerCase();
+
+        if (!confirmation.equals("oui") && !confirmation.equals("o")) {
+            System.out.println("\n⚠ Import annulé.");
+            return;
+        }
+
+        try {
+            int nbImportes = bookManager.importerDepuisJson(nomFichier);
+            System.out.println("\n✓ Import réussi !");
+            System.out.println("📥 " + nbImportes + " livre(s) importé(s) avec succès.");
+        } catch (java.io.FileNotFoundException e) {
+            System.err.println("\n✗ Fichier non trouvé : " + nomFichier);
+        } catch (Exception e) {
+            System.err.println("\n✗ Erreur lors de l'import : " + e.getMessage());
         }
     }
 

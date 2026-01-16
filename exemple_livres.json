@@ -1,0 +1,37 @@
+[
+  {
+    "titre": "Harry Potter à l'école des sorciers",
+    "auteur": "J.K. Rowling",
+    "datePublication": "1997-06-26",
+    "isbn": "978-2070584628",
+    "categorie": "Fantasy"
+  },
+  {
+    "titre": "Le Seigneur des Anneaux",
+    "auteur": "J.R.R. Tolkien",
+    "datePublication": "1954-07-29",
+    "isbn": "978-2070613751",
+    "categorie": "Fantasy"
+  },
+  {
+    "titre": "L'Étranger",
+    "auteur": "Albert Camus",
+    "datePublication": "1942-05-01",
+    "isbn": "978-2070360024",
+    "categorie": "Littérature"
+  },
+  {
+    "titre": "1984",
+    "auteur": "George Orwell",
+    "datePublication": "1949-06-08",
+    "isbn": "978-0451524935",
+    "categorie": "Science-Fiction"
+  },
+  {
+    "titre": "Le Petit Prince",
+    "auteur": "Antoine de Saint-Exupéry",
+    "datePublication": "1943-04-06",
+    "isbn": "978-2070612758",
+    "categorie": "Jeunesse"
+  }
+]
