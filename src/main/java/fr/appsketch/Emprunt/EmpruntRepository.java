@@ -1,25 +1,24 @@
 package fr.appsketch.Emprunt;
 
 import fr.appsketch.Book.Book;
-import fr.appsketch.Core.HibernateManager;
 import fr.appsketch.User.User;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository pour gérer la persistance des emprunts
+ * Responsabilités: accès aux données, requêtes SQL/JPQL
+ */
 public class EmpruntRepository {
 
-    @PersistenceContext
-    private EntityManager em ;
+    private final EntityManager em;
 
-    public EmpruntRepository() {
-        em = HibernateManager.getSessionFactory().createEntityManager();
+    public EmpruntRepository(EntityManager em) {
+        this.em = em;
     }
 
-    @Transactional
     public Emprunt save(Emprunt emprunt) {
         if (emprunt.getId() == null) {
             em.persist(emprunt);
@@ -67,7 +66,16 @@ public class EmpruntRepository {
         return query.getResultList();
     }
 
+    public List<Emprunt> findEmpruntsEnCoursByBook(Book book) {
+        TypedQuery<Emprunt> query = em.createQuery(
+            "SELECT e FROM Emprunt e WHERE e.book = :book AND e.etat = :etat", Emprunt.class);
+        query.setParameter("book", book);
+        query.setParameter("etat", EtatEmprunt.EN_COURS);
+        return query.getResultList();
+    }
+
     public void deleteById(Long id) {
         findById(id).ifPresent(em::remove);
     }
 }
+

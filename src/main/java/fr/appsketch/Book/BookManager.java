@@ -132,6 +132,24 @@ public class BookManager {
     }
 
     /**
+     * Récupère les livres disponibles (non empruntés)
+     */
+    public List<Book> listerLivresDisponibles() {
+        return bookRepository.findAll().stream()
+                .filter(book -> !book.isEmprunte())
+                .toList();
+    }
+
+    /**
+     * Récupère les livres empruntés
+     */
+    public List<Book> listerLivresEmpruntes() {
+        return bookRepository.findAll().stream()
+                .filter(Book::isEmprunte)
+                .toList();
+    }
+
+    /**
      * Recherche des livres par titre (contient)
      */
     public List<Book> rechercherParTitre(String titre) {

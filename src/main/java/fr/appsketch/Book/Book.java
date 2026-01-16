@@ -101,6 +101,16 @@ public class Book {
         this.emprunts = emprunts;
     }
 
+    // Méthode utilitaire pour vérifier si le livre est actuellement emprunté
+    public boolean isEmprunte() {
+        if (emprunts == null || emprunts.isEmpty()) {
+            return false;
+        }
+        return emprunts.stream()
+                .anyMatch(emprunt -> emprunt.getEtat() != null &&
+                        emprunt.getEtat().toString().equals("EN_COURS"));
+    }
+
     // Méthode utilitaire pour ajouter un emprunt
     public void addEmprunt(Emprunt emprunt) {
         emprunts.add(emprunt);
