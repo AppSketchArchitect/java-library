@@ -49,9 +49,13 @@ public class BookDisplay {
             System.out.println("2. Modifier un livre");
             System.out.println("3. Supprimer un livre");
             System.out.println("4. Lister tous les livres");
-            System.out.println("5. Rechercher par titre");
-            System.out.println("6. Rechercher par auteur");
-            System.out.println("7. Rechercher par catégorie");
+            System.out.println("5. Lister les livres disponibles");
+            System.out.println("6. Lister les livres empruntés");
+            System.out.println("7. Rechercher par titre");
+            System.out.println("8. Rechercher par auteur");
+            System.out.println("9. Rechercher par catégorie");
+            System.out.println("10. Emprunter un livre");
+            System.out.println("11. Rendre un livre");
             System.out.println("0. Quitter");
             System.out.print("\nVotre choix : ");
 
@@ -84,6 +88,12 @@ public class BookDisplay {
                     break;
                 case "9":
                     rechercherParCategorie();
+                    break;
+                case "10":
+                    emprunterLivre();
+                    break;
+                case "11":
+                    rendreLivre();
                     break;
                 case "0":
                     System.out.println("\n✓ Au revoir !");
