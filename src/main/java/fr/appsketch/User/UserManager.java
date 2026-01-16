@@ -1,14 +1,20 @@
 package fr.appsketch.User;
 
+import fr.appsketch.Core.HibernateManager;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+
 import java.util.Scanner;
 import java.util.List;
 
 public class UserManager {
 
     private UserRepository userRepository;
+    private EntityManager em;
 
-    public UserManager(UserRepository userRepository) {
+    public UserManager(UserRepository userRepository, EntityManager em) {
         this.userRepository = userRepository;
+        this.em = em;
     }
 
     public User creerUtilisateur() {
@@ -35,10 +41,21 @@ public class UserManager {
 
         User user = new User(nom, prenom, email, motDePasse);
 
-        // Sauvegarder en base via le repository
-        userRepository.save(user);
+        // Sauvegarder en base via le repository avec transaction
+        EntityTransaction transaction = em.getTransaction();
+        try {
+            transaction.begin();
+            userRepository.save(user);
+            transaction.commit();
+            System.out.println("Utilisateur créé et enregistré : " + user);
+        } catch (Exception e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            System.err.println("Erreur lors de la création de l'utilisateur : " + e.getMessage());
+            return null;
+        }
 
-        System.out.println("Utilisateur créé et enregistré : " + user);
         return user;
     }
 
@@ -54,10 +71,16 @@ public class UserManager {
 
     // Exemple de test
     public static void main(String[] args) {
-        UserRepository repo = new UserRepository();
-        UserManager manager = new UserManager(repo);
+        EntityManager em = HibernateManager.getSessionFactory().createEntityManager();
+        UserRepository repo = new UserRepository(em);
+        UserManager manager = new UserManager(repo, em);
 
-        manager.creerUtilisateur();
-        manager.afficherUtilisateurs();
+        try {
+            manager.creerUtilisateur();
+            manager.afficherUtilisateurs();
+        } finally {
+            em.close();
+            HibernateManager.shutdown();
+        }
     }
 }

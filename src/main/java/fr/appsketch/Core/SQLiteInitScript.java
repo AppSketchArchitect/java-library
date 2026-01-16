@@ -10,7 +10,7 @@ public class SQLiteInitScript {
     private static final Logger log = LoggerFactory.getLogger(SQLiteInitScript.class);
 
     public static void main(String[] args) {
-        String url = "jdbc:sqlite:database.db";
+        String url = "jdbc:sqlite:test.db";
 
         try (Connection ignored = DriverManager.getConnection(url)) {
             System.out.println("Base SQLite et table créées avec succès !");

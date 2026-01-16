@@ -1,23 +1,18 @@
 package fr.appsketch.User;
 
-import fr.appsketch.Core.HibernateManager;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
 public class UserRepository {
 
-    @PersistenceContext
-    private EntityManager em;
+    private final EntityManager em;
 
-    public UserRepository() {
-        em = HibernateManager.getSessionFactory().createEntityManager();
+    public UserRepository(EntityManager em) {
+        this.em = em;
     }
 
-    @Transactional
     public User save(User user) {
         if (user.getId() == null) {
             em.persist(user);
