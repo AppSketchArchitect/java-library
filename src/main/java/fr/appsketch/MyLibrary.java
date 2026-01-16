@@ -3,6 +3,8 @@ package fr.appsketch;
 import fr.appsketch.Book.BookManager;
 import fr.appsketch.Book.BookRepository;
 import fr.appsketch.Core.HibernateManager;
+import fr.appsketch.Displays.BookDisplay;
+import fr.appsketch.Displays.UserDisplay;
 import fr.appsketch.Emprunt.EmpruntManager;
 import fr.appsketch.Emprunt.EmpruntRepository;
 import fr.appsketch.User.UserManager;

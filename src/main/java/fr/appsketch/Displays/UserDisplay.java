@@ -1,4 +1,4 @@
-package fr.appsketch;
+package fr.appsketch.Displays;
 
 import fr.appsketch.User.User;
 import fr.appsketch.User.UserManager;

@@ -1,4 +1,4 @@
-package fr.appsketch;
+package fr.appsketch.Displays;
 
 import fr.appsketch.Book.Book;
 import fr.appsketch.Book.BookManager;
