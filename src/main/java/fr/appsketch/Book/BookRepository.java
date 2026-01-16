@@ -54,4 +54,8 @@ public class BookRepository {
     public void deleteById(Long id) {
         findById(id).ifPresent(em::remove);
     }
+
+    public EntityManager getEm() {
+        return em;
+    }
 }
