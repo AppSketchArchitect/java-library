@@ -1,9 +1,9 @@
 package fr.appsketch.User;
 
-import fr.appsketch.Book.Book;
+import fr.appsketch.Emprunt.Emprunt;
 import jakarta.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "Users")
@@ -25,13 +25,8 @@ public class User {
     @Column(nullable = false)
     private String motDePasse;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_books",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "book_id")
-    )
-    private Set<Book> livresEmpruntes = new HashSet<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Emprunt> emprunts = new ArrayList<>();
 
     // Constructeurs
     public User() {
@@ -85,24 +80,6 @@ public class User {
         this.motDePasse = motDePasse;
     }
 
-    public Set<Book> getLivresEmpruntes() {
-        return livresEmpruntes;
-    }
-
-    public void setLivresEmpruntes(Set<Book> livresEmpruntes) {
-        this.livresEmpruntes = livresEmpruntes;
-    }
-
-    // Méthodes pour gérer les emprunts
-    public void emprunterLivre(Book book) {
-        livresEmpruntes.add(book);
-        book.setDisponible(false);
-    }
-
-    public void retournerLivre(Book book) {
-        livresEmpruntes.remove(book);
-        book.setDisponible(true);
-    }
 
     @Override
     public String toString() {
@@ -111,7 +88,6 @@ public class User {
                 ", nom='" + nom + '\'' +
                 ", prenom='" + prenom + '\'' +
                 ", email='" + email + '\'' +
-                ", livresEmpruntes=" + livresEmpruntes.size() +
                 '}';
     }
 }
